@@ -64,7 +64,6 @@ body {
     letter-spacing: 10px;
     font-weight: 900;
     position: relative;
-    animation: textPulse 1.5s ease-in-out infinite alternate;
 }
 
 @keyframes textPulse {
@@ -442,6 +441,7 @@ body {
 .rpm-indicator-dot {
     fill: #00FFFF;
     filter: drop-shadow(0 0 4px #00FFFF) drop-shadow(0 0 8px rgba(0, 255, 255, 0.5));
+    opacity: 0;
 }
 
 /* TICKS */

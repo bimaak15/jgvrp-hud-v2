@@ -95,6 +95,13 @@ function setRPM(rpm) {
     // Update RPM Indicator Position on the gauge
     const rpmIndicatorEl = document.getElementById('rpmIndicatorSVG');
     if (rpmIndicatorEl) {
+        // Show indicator only when RPM > 0
+        if (rpm > 0) {
+            rpmIndicatorEl.style.opacity = '1';
+        } else {
+            rpmIndicatorEl.style.opacity = '0';
+        }
+        
         // Calculate angle: 150deg to 390deg (240 degree range) for the gauge arc
         const startAngle = 150;
         const totalAngle = 240;
