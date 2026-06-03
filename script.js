@@ -26,7 +26,7 @@ function buildTicks(containerId, options) {
 
     for (let i = 0; i < majorCount; i++) {
         const angle = (startAngle + i * step) * (Math.PI / 180);
-        
+
         // Major Tick
         const x1 = cx + rOuter * Math.cos(angle);
         const y1 = cy + rOuter * Math.sin(angle);
@@ -72,12 +72,12 @@ function setEngine(state) {
 function setSpeed(speed) {
     let unitText = 'MPH';
     let val = 0;
-    switch(speedMode) {
+    switch (speedMode) {
         case 1: val = Math.round(speed * 2.236936); unitText = 'MPH'; break;
         case 2: val = Math.round(speed * 1.943844); unitText = 'Knots'; break;
         default: val = Math.round(speed * 3.6); unitText = 'KMH';
     }
-    
+
     if (elements.speed) elements.speed.innerText = val;
     if (elements.unit) elements.unit.innerText = unitText;
 
@@ -88,7 +88,7 @@ function setSpeed(speed) {
 function setRPM(rpm) {
     const rpmValue = Math.round(rpm * 10000);
     if (elements.rpm) elements.rpm.innerText = rpmValue;
-    
+
     // Update RPM Arc (270deg arc, circ=314, len=235.6)
     setArcFill(elements.rpmArc, rpm, 235.62, 314.16);
 }

@@ -261,7 +261,22 @@ body {
     bottom: 20px;
     right: 20px;
     width: 360px;
-    background: var(--bg-dark);
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 19px,
+            rgba(255, 255, 255, 0.03) 19px,
+            rgba(255, 255, 255, 0.03) 20px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 19px,
+            rgba(255, 255, 255, 0.03) 19px,
+            rgba(255, 255, 255, 0.03) 20px
+        ),
+        var(--bg-dark);
     border-radius: 20px;
     padding: 25px;
     display: flex;
