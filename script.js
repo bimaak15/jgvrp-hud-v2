@@ -4,130 +4,190 @@ let indicators = 0;
 
 const onOrOff = state => state ? 'On' : 'Off';
 
+/* ========================================
+   SVG GAUGE HELPERS
+   ======================================== */
+
 /**
- * Updates the display of the engine state.
- *
- * @param {boolean} state If true, the engine is on; otherwise, it is off.
- * @description Sets the engine state display based on the provided boolean state.
+ * Builds tick marks for an SVG gauge.
  */
+function buildTicks(containerId, options) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const { center, radii, angles, counts } = options;
+    const [cx, cy] = center;
+    const [rOuter, rInnerMajor, rInnerMinor] = radii;
+    const [startAngle, totalAngle] = angles;
+    const [majorCount, minorPerSegment] = counts;
+
+    let html = '';
+    const step = totalAngle / (majorCount - 1);
+
+    for (let i = 0; i < majorCount; i++) {
+        const angle = (startAngle + i * step) * (Math.PI / 180);
+        
+        // Major Tick
+        const x1 = cx + rOuter * Math.cos(angle);
+        const y1 = cy + rOuter * Math.sin(angle);
+        const x2 = cx + rInnerMajor * Math.cos(angle);
+        const y2 = cy + rInnerMajor * Math.sin(angle);
+        html += `<line class="tick-major" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
+
+        // Minor Ticks
+        if (i < majorCount - 1) {
+            const minorStep = step / (minorPerSegment + 1);
+            for (let j = 1; j <= minorPerSegment; j++) {
+                const mAngle = (startAngle + i * step + j * minorStep) * (Math.PI / 180);
+                const mx1 = cx + rOuter * Math.cos(mAngle);
+                const my1 = cy + rOuter * Math.sin(mAngle);
+                const mx2 = cx + rInnerMinor * Math.cos(mAngle);
+                const my2 = cy + rInnerMinor * Math.sin(mAngle);
+                html += `<line class="tick-minor" x1="${mx1}" y1="${my1}" x2="${mx2}" y2="${my2}" />`;
+            }
+        }
+    }
+    container.innerHTML = html;
+}
+
+/**
+ * Updates the stroke-dasharray of an SVG arc to fill it.
+ */
+function setArcFill(el, fraction, arcLen, circ) {
+    if (!el) return;
+    const fill = Math.min(fraction, 1.0) * arcLen;
+    el.setAttribute('stroke-dasharray', `${fill} ${circ}`);
+}
+
+/* ========================================
+   API FUNCTIONS (SERVER COMPATIBLE)
+   ======================================== */
+
 function setEngine(state) {
-    elements.engine.innerText = onOrOff(state);
+    if (elements.engine) elements.engine.innerText = onOrOff(state);
+    const badge = document.getElementById('engineBadge');
+    if (badge) badge.classList.toggle('active', !!state);
 }
 
-/**
- * Updates the speed display based on the current speed mode.
- * @param {number} speed - The speed value in meters per second (m/s).
- * @description Converts the speed value to the current speed mode and updates the display.
- */
 function setSpeed(speed) {
-    switch(speedMode)
-    {
-        case 1: speed = elements.speed.innerText = `${Math.round(speed * 2.236936)} MPH`; break; // MPH
-        case 2: speed = elements.speed.innerText = `${Math.round(speed * 1.943844)} Knots`; break; // Knots
-        default: speed = elements.speed.innerText = `${Math.round(speed * 3.6)} KMH`; // KMH
+    let unitText = 'MPH';
+    let val = 0;
+    switch(speedMode) {
+        case 1: val = Math.round(speed * 2.236936); unitText = 'MPH'; break;
+        case 2: val = Math.round(speed * 1.943844); unitText = 'Knots'; break;
+        default: val = Math.round(speed * 3.6); unitText = 'KMH';
     }
+    
+    if (elements.speed) elements.speed.innerText = val;
+    if (elements.unit) elements.unit.innerText = unitText;
+
+    // Update Main Gauge (Max speed 300 for scale)
+    setArcFill(elements.speedArc, val / 300, 433.54, 578.05);
 }
 
-/**
- * Updates the RPM (Revolutions Per Minute) display.
- * @param {number} rpm - The RPM value to display. (0 to 1).
- */
 function setRPM(rpm) {
-    elements.rpm.innerText = `${rpm.toFixed(4)} RPM`;
+    const rpmValue = Math.round(rpm * 10000);
+    if (elements.rpm) elements.rpm.innerText = rpmValue;
+    
+    // Update RPM Arc (270deg arc, circ=314, len=235.6)
+    setArcFill(elements.rpmArc, rpm, 235.62, 314.16);
 }
 
-/**
- * Updates the fuel level display as a percentage.
- * @param {number} fuel - The fuel level (0 to 1).
- */
 function setFuel(fuel) {
-    elements.fuel.innerText = `${(fuel * 100).toFixed(1)}%`;
+    if (elements.fuel) elements.fuel.innerText = `${Math.round(fuel * 100)}%`;
+    setArcFill(elements.fuelArc, fuel, 235.62, 314.16);
 }
 
-/**
- * Updates the vehicle health display as a percentage.
- * @param {number} health - The vehicle health level (0 to 1).
- */
 function setHealth(health) {
-    elements.health.innerText = `${(health * 100).toFixed(1)}%`;
+    if (elements.health) elements.health.innerText = `${(health * 100).toFixed(1)}%`;
+    if (elements.healthFill) elements.healthFill.style.width = `${health * 100}%`;
 }
 
-/**
- * Updates the current gear display.
- * @param {number} gear - The current gear to display. 0 represents neutral/reverse.
- */
 function setGear(gear) {
-    elements.gear.innerText = String(gear);
-}
-
-/**
- * Updates the headlights status display.
- * @param {number} state - The headlight state (0: Off, 1: On, 2: High Beam).
- */
-function setHeadlights(state) {
-    switch(state)
-    {
-        case 1: elements.headlights.innerText = 'On'; break;
-        case 2: elements.headlights.innerText = 'High Beam'; break;
-        default: elements.headlights.innerText = 'Off';
+    if (elements.gear) {
+        if (gear === 0) elements.gear.innerText = 'R';
+        else if (gear === 'N') elements.gear.innerText = 'N';
+        else elements.gear.innerText = gear;
     }
 }
 
-/**
- * Sets the state of the left turn indicator and updates the display.
- * @param {boolean} state - If true, turns the left indicator on; otherwise, turns it off.
- */
+function setHeadlights(state) {
+    if (elements.headlights) {
+        elements.headlights.innerText = state > 0 ? (state === 2 ? 'High' : 'On') : 'Off';
+    }
+    const badge = document.getElementById('headlightBadge');
+    if (badge) badge.classList.toggle('active', state > 0);
+}
+
 function setLeftIndicator(state) {
-    indicators = (indicators & 0b10) | (state ? 0b01 : 0b00);
-    elements.indicators.innerText = `${indicators & 0b01 ? 'On' : 'Off'} / ${indicators & 0b10 ? 'On' : 'Off'}`;
+    const light = document.getElementById('seinLeftLight');
+    if (light) light.classList.toggle('active', !!state);
 }
 
-/**
- * Sets the state of the right turn indicator and updates the display.
- * @param {boolean} state - If true, turns the right indicator on; otherwise, turns it off.
- */
 function setRightIndicator(state) {
-    indicators = (indicators & 0b01) | (state ? 0b10 : 0b00);
-    elements.indicators.innerText = `${indicators & 0b01 ? 'On' : 'Off'} / ${indicators & 0b10 ? 'On' : 'Off'}`;
+    const light = document.getElementById('seinRightLight');
+    if (light) light.classList.toggle('active', !!state);
 }
 
-/**
- * Updates the seatbelt status display.
- * @param {boolean} state - If true, indicates seatbelts are fastened; otherwise, indicates they are not.
- */
 function setSeatbelts(state) {
-    elements.seatbelts.innerText = onOrOff(state);
+    if (elements.seatbelts) elements.seatbelts.innerText = onOrOff(state);
+    const badge = document.getElementById('seatbeltBadge');
+    if (badge) badge.classList.toggle('active', !!state);
 }
 
-/**
- * Sets the speed display mode and updates the speed unit display.
- * @param {number} mode - The speed mode to set (0: KMH, 1: MPH, 2: Knots).
- */
-function setSpeedMode(mode) {
-    speedMode = mode;
+function setSpeedMode(mode) { speedMode = mode; }
+
+function setOdometer(distance) {
+    if (elements.odometer) elements.odometer.innerText = distance.toFixed(1) + ' Miles';
 }
 
-/**
- * Updates the odometer display.
- * @param {number} distance - The distance in miles.
- */
-function setOdometer(distance)
-{
-    elements.odometer.innerText = distance.toFixed(1) + ' Miles';
-}
+/* ========================================
+   INITIALIZATION
+   ======================================== */
 
-// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Cache elements
     elements = {
         engine: document.getElementById('engine'),
         speed: document.getElementById('speed'),
+        unit: document.getElementById('unit'),
         rpm: document.getElementById('rpm'),
         fuel: document.getElementById('fuel'),
         health: document.getElementById('health'),
         gear: document.getElementById('gear'),
         headlights: document.getElementById('headlights'),
-        indicators: document.getElementById('indicators'),
         seatbelts: document.getElementById('seatbelts'),
         odometer: document.getElementById('odometer'),
+        speedArc: document.getElementById('speedArc'),
+        rpmArc: document.getElementById('rpmArc'),
+        fuelArc: document.getElementById('fuelArc'),
+        healthFill: document.getElementById('healthFill'),
     };
+
+    // Initialize Ticks
+    buildTicks('speedTicks', {
+        center: [110, 110], radii: [101, 90, 95],
+        angles: [150, 240], counts: [11, 4]
+    });
+    buildTicks('rpmTicks', {
+        center: [65, 65], radii: [57, 49, 52],
+        angles: [150, 240], counts: [9, 2]
+    });
+    buildTicks('fuelTicks', {
+        center: [65, 65], radii: [57, 49, 52],
+        angles: [150, 240], counts: [9, 2]
+    });
+
+    // Initial State Check
+    setSpeed(0);
+    setRPM(0);
+    setFuel(1.0);
+    setHealth(1.0);
+    setGear('N');
+
+    // Welcome Screen auto-hide
+    setTimeout(() => {
+        const ws = document.getElementById('welcomeScreen');
+        if (ws) ws.classList.add('hidden');
+    }, 3000);
 });

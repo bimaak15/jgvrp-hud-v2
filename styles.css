@@ -1,48 +1,353 @@
+/* ========================================
+   GLOBAL STYLES & NEON HUD THEME
+   ======================================== */
+
+:root {
+    --neon-cyan: #00FFFF;
+    --neon-green: #39FF14;
+    --neon-white: #FFFFFF;
+    --bg-dark: rgba(10, 20, 30, 0.85);
+    --bg-badge: rgba(30, 45, 60, 0.6);
+    --text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    --glow-cyan: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
 * {
     user-select: none;
     user-drag: none;
+    box-sizing: border-box;
 }
 
 body {
     background-color: transparent !important;
-    font-family: Arial, sans-serif;
-    font-size: 11pt;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--neon-white);
 }
 
-main {
+/* ========================================
+   WELCOME SCREEN
+   ======================================== */
+
+.welcome-screen {
     position: fixed;
-    bottom: 15px;
-    right: 15px;
-
-    width: 250px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), transparent);
     display: flex;
-    flex-direction: row;
-    background-color: #000000AA;
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.6s ease;
 }
 
-section {
-    width: 125px
+.welcome-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
-dl {
-    margin: 0;
+.welcome-title {
+    font-size: 64px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 20px var(--neon-cyan);
+    letter-spacing: 12px;
+    font-weight: 800;
 }
 
-dt {
-    font-weight: bold;
+/* ========================================
+   MAIN HUD CONTAINER
+   ======================================== */
+
+.hud-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 360px;
+    background: var(--bg-dark);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-dt::after {
-    content: ":";
+@keyframes slideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
-dd {
-    margin: 0;
+/* ========================================
+   TOP ROW BADGES
+   ======================================== */
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
 }
 
-dd:not(:last-child) {
-    margin-bottom: 5px;
+.badge-item {
+    flex: 1;
+    background: var(--bg-badge);
+    padding: 8px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
+
+.badge-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+}
+
+.badge-icon svg {
+    fill: currentColor;
+}
+
+.badge-label {
+    font-size: 8px;
+    font-weight: 700;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+}
+
+.badge-value {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.badge-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.badge-item.active .badge-icon { opacity: 1; color: var(--neon-cyan); }
+.badge-item.active .badge-label { opacity: 1; }
+.badge-item.active .badge-value { color: var(--neon-white); text-shadow: 0 0 5px var(--neon-white); }
+
+/* ========================================
+   MAIN CIRCULAR GAUGE
+   ======================================== */
+
+.main-gauge-container {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-svg {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+}
+
+.track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.03);
+    stroke-width: 8px;
+}
+
+.main-svg .track { stroke-width: 12px; }
+
+.arc-fill {
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.1s linear, stroke 0.3s ease;
+}
+
+#speedArc {
+    stroke: var(--neon-cyan);
+    stroke-width: 10px;
+    stroke-dasharray: 0 578;
+    transform: rotate(150deg);
+    transform-origin: 110px 110px;
+}
+
+.central-info {
+    text-align: center;
+    z-index: 5;
+    margin-top: 10px;
+}
+
+.gear-label {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.4;
+    letter-spacing: 2px;
+}
+
+.gear-value {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.speed-box {
+    margin-top: 5px;
+}
+
+.speed-num {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 0.8;
+}
+
+.speed-unit {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--neon-cyan);
+    letter-spacing: 1.5px;
+    margin-top: 2px;
+}
+
+/* TICKS */
+.tick-major {
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1.5px;
+}
+
+.tick-minor {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 1px;
+}
+
+/* TURN INDICATORS */
+.turn-indicators {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+}
+
+.turn-item {
+    width: 24px;
+    height: 24px;
+    opacity: 0.1;
+    transition: all 0.2s ease;
+}
+
+.turn-item svg { fill: currentColor; }
+.turn-item.active { opacity: 1; color: var(--neon-green); filter: drop-shadow(0 0 8px var(--neon-green)); }
+
+/* ========================================
+   BOTTOM SMALL GAUGES
+   ======================================== */
+
+.bottom-gauges {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.gauge-small {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gauge-small svg {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+}
+
+.gauge-small .arc-fill {
+    stroke-width: 7px;
+    transform: rotate(150deg);
+    transform-origin: 65px 65px;
+}
+
+#rpmArc { stroke: var(--neon-green); stroke-dasharray: 0 314; }
+#fuelArc { stroke: var(--neon-green); stroke-dasharray: 0 314; }
+
+.gauge-label {
+    font-size: 9px;
+    font-weight: 700;
+    opacity: 0.4;
+    letter-spacing: 1px;
+}
+
+.gauge-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--neon-green);
+}
+
+/* ========================================
+   FOOTER BAR
+   ======================================== */
+
+.hud-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.health-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-icon { font-size: 10px; font-weight: 800; opacity: 0.5; }
+.footer-val { font-size: 11px; font-weight: 700; }
+
+.health-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.health-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #FF4500, #FFD700, var(--neon-green));
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    transition: width 0.3s ease;
+}
+
+.odo-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.odometer {
+    color: var(--neon-cyan);
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   GAMES CONTENT (TICKS ANIMATION ETC)
+   ======================================== */
+
+[hidden] { display: none !important; }

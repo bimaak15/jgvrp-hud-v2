@@ -1,42 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speedometer Template</title>
+    <title>Neon Circular HUD - JGVRP</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
-    <main class="speedometer">
-        <section>
-            <dl>
-                <dt>Engine</dt>
-                <dd id="engine">&nbsp;</dd>
-                <dt>Speed</dt>
-                <dd id="speed">&nbsp;</dd>
-                <dt>RPM</dt>
-                <dd id="rpm">&nbsp;</dd>
-                <dt>Fuel</dt>
-                <dd id="fuel">&nbsp;</dd>
-                <dt>Health</dt>
-                <dd id="health">&nbsp;</dd>
-            </dl>
-        </section>
-        <section>
-            <dl>
-                <dt>Gear</dt>
-                <dd id="gear">&nbsp;</dd>
-                <dt>Headlights</dt>
-                <dd id="headlights">&nbsp;</dd>
-                <dt>Indicators</dt>
-                <dd id="indicators">&nbsp;</dd>
-                <dt>Seatbelts</dt>
-                <dd id="seatbelts">&nbsp;</dd>
-                <dt>Odometer</dt>
-                <dd id="odometer">&nbsp;</dd>
-            </dl>
-        </section>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-content">
+            <h1 class="welcome-title">SYSTEM INITIALIZED</h1>
+            <div class="welcome-lines"></div>
+        </div>
+    </div>
+
+    <!-- Main HUD Display -->
+    <main class="hud-container" id="mainDisplay">
+        <!-- Top Badges -->
+        <div class="top-row">
+            <div class="badge-item" id="engineBadge">
+                <span class="badge-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M7,20H4c-1.1,0-2-0.9-2-2V6c0-1.1,0.9-2,2-2h3V20z M20,4h-3v16h3c1.1,0,2-0.9,2-2V6C22,4.9,21.1,4,20,4z M15,4H9v16h6V4z" />
+                    </svg>
+                </span>
+                <span class="badge-label">ENGINE</span>
+                <span class="badge-value" id="engine">&nbsp;</span>
+            </div>
+            <div class="badge-item" id="headlightBadge">
+                <span class="badge-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="8" />
+                    </svg>
+                </span>
+                <span class="badge-label">LIGHTS</span>
+                <span class="badge-value" id="headlights">&nbsp;</span>
+            </div>
+            <div class="badge-item" id="seatbeltBadge">
+                <span class="badge-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2L8,6H4c-1.1,0-2,0.9-2,2v12h20V8c0-1.1-0.9-2-2-2h-4L12,2z" />
+                    </svg>
+                </span>
+                <span class="badge-label">SEATBELT</span>
+                <span class="badge-value" id="seatbelts">&nbsp;</span>
+            </div>
+        </div>
+
+        <!-- Central Speed/Gear Gauge -->
+        <div class="main-gauge-container">
+            <svg class="main-svg" viewBox="0 0 220 220">
+                <defs>
+                    <filter id="glow-main">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+                <circle class="track" cx="110" cy="110" r="92" />
+                <circle class="arc-fill" id="speedArc" cx="110" cy="110" r="92" filter="url(#glow-main)" />
+                <g id="speedTicks"></g>
+            </svg>
+            <div class="central-info">
+                <div class="gear-label">GEAR</div>
+                <div class="gear-value" id="gear">N</div>
+                <div class="speed-box">
+                    <div class="speed-num" id="speed">0</div>
+                    <div class="speed-unit" id="unit">MPH</div>
+                </div>
+            </div>
+
+            <!-- Turn Indicators -->
+            <div class="turn-indicators">
+                <div class="turn-item left" id="seinLeftLight">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14,7l-5,5l5,5V7z" />
+                    </svg>
+                </div>
+                <div class="turn-item right" id="seinRightLight">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10,17l5-5l-5-5V17z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Gauges (RPM & Fuel) -->
+        <div class="bottom-gauges">
+            <div class="gauge-small" id="rpmGauge">
+                <svg viewBox="0 0 130 130">
+                    <defs>
+                        <filter id="glow-rpm">
+                            <feGaussianBlur stdDeviation="2" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle class="track" cx="65" cy="65" r="50" />
+                    <circle class="arc-fill" id="rpmArc" cx="65" cy="65" r="50" filter="url(#glow-rpm)" />
+                    <g id="rpmTicks"></g>
+                </svg>
+                <div class="gauge-label">RPM</div>
+                <div class="gauge-value" id="rpm">0</div>
+            </div>
+
+            <div class="gauge-small" id="fuelGauge">
+                <svg viewBox="0 0 130 130">
+                    <defs>
+                        <filter id="glow-fuel">
+                            <feGaussianBlur stdDeviation="2" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle class="track" cx="65" cy="65" r="50" />
+                    <circle class="arc-fill" id="fuelArc" cx="65" cy="65" r="50" filter="url(#glow-fuel)" />
+                    <g id="fuelTicks"></g>
+                </svg>
+                <div class="gauge-label">FUEL</div>
+                <div class="gauge-value" id="fuel">100%</div>
+            </div>
+        </div>
+
+        <!-- Footer Bar (Health & Odometer) -->
+        <div class="hud-footer">
+            <div class="health-container">
+                <span class="footer-icon">HP</span>
+                <div class="health-bar-bg">
+                    <div class="health-bar-fill" id="healthFill"></div>
+                </div>
+                <span class="footer-val" id="health">100.0%</span>
+            </div>
+            <div class="odo-container">
+                <span class="footer-val odometer" id="odometer">0.0 Miles</span>
+            </div>
+        </div>
+
+        <!-- Hidden data fields for JS compatibility -->
+        <div style="display: none;">
+            <dd id="indicators">&nbsp;</dd>
+        </div>
     </main>
-    <script src="/script.js"></script>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
