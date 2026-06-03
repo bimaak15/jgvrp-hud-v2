@@ -148,11 +148,11 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: white;
+    background: transparent;
     opacity: 0;
     z-index: 50;
     pointer-events: none;
-    mix-blend-mode: overlay;
+    box-shadow: inset 0 0 100px rgba(255, 255, 255, 0);
 }
 
 .lightning-overlay.flash {
@@ -160,12 +160,12 @@ body {
 }
 
 @keyframes lightningFlash {
-    0% { opacity: 0.6; }
-    20% { opacity: 0.05; }
-    40% { opacity: 0.4; }
-    60% { opacity: 0; }
-    80% { opacity: 0.2; }
-    100% { opacity: 0; }
+    0% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.3); }
+    20% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.05); }
+    40% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.2); }
+    60% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0); }
+    80% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.1); }
+    100% { box-shadow: inset 0 0 100px rgba(255, 255, 255, 0); }
 }
 
 /* --- ELECTRIC SPARKS --- */
@@ -441,7 +441,8 @@ body {
 .rpm-indicator-dot {
     fill: #00FFFF;
     filter: drop-shadow(0 0 4px #00FFFF) drop-shadow(0 0 8px rgba(0, 255, 255, 0.5));
-    opacity: 0;
+    opacity: 0 !important;
+    transition: opacity 0.1s linear;
 }
 
 /* TICKS */
