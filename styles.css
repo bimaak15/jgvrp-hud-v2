@@ -445,6 +445,20 @@ body {
     transition: opacity 0.1s linear;
 }
 
+.rpm-indicator-dot-start {
+    fill: #00FFFF;
+    filter: drop-shadow(0 0 4px #00FFFF) drop-shadow(0 0 8px rgba(0, 255, 255, 0.5));
+    opacity: 1;
+}
+
+.rpm-tail-path {
+    stroke: #00FFFF;
+    stroke-width: 2;
+    fill: none;
+    filter: drop-shadow(0 0 4px #00FFFF) drop-shadow(0 0 8px rgba(0, 255, 255, 0.3));
+    stroke-linecap: round;
+}
+
 /* TICKS */
 .tick-major {
     stroke: rgba(255, 255, 255, 0.3);

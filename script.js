@@ -94,6 +94,8 @@ function setRPM(rpm) {
     
     // Update RPM Indicator Position on the gauge
     const rpmIndicatorEl = document.getElementById('rpmIndicatorSVG');
+    const rpmTailPath = document.getElementById('rpmTailPath');
+    
     if (rpmIndicatorEl) {
         // Calculate angle: 150deg to 390deg (240 degree range) for the gauge arc
         const startAngle = 150;
@@ -113,6 +115,25 @@ function setRPM(rpm) {
         
         // Show indicator only when RPM > 0.1 (to avoid early visibility)
         rpmIndicatorEl.style.opacity = rpm > 0.1 ? '1' : '0';
+        
+        // Update tail path (arc from start position to current position)
+        if (rpmTailPath && rpm > 0.1) {
+            // Start dot position (at 150 degrees)
+            const startRadian = (startAngle) * (Math.PI / 180);
+            const startX = centerX + radius * Math.cos(startRadian);
+            const startY = centerY + radius * Math.sin(startRadian);
+            
+            // Determine if arc is large (> 180 degrees)
+            const arcAngle = rpm * totalAngle;
+            const largeArc = arcAngle > 180 ? 1 : 0;
+            
+            // Create SVG arc path
+            const pathData = `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}`;
+            rpmTailPath.setAttribute('d', pathData);
+            rpmTailPath.style.opacity = '1';
+        } else if (rpmTailPath) {
+            rpmTailPath.style.opacity = '0';
+        }
     }
 }
 
