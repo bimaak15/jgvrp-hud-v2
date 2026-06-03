@@ -91,6 +91,26 @@ function setRPM(rpm) {
 
     // Update RPM Arc (270deg arc, circ=314, len=235.6)
     setArcFill(elements.rpmArc, rpm, 235.62, 314.16);
+    
+    // Update RPM Indicator Position on the gauge
+    const rpmIndicatorEl = document.getElementById('rpmIndicatorSVG');
+    if (rpmIndicatorEl) {
+        // Calculate angle: 150deg to 390deg (240 degree range) for the gauge arc
+        const startAngle = 150;
+        const totalAngle = 240;
+        const angle = startAngle + (rpm * totalAngle);
+        const radian = (angle) * (Math.PI / 180);
+        
+        // Position on arc at SVG coordinates - center is 110,110 with radius 92
+        const centerX = 110;
+        const centerY = 110;
+        const radius = 92;
+        const x = centerX + radius * Math.cos(radian);
+        const y = centerY + radius * Math.sin(radian);
+        
+        rpmIndicatorEl.setAttribute('cx', x);
+        rpmIndicatorEl.setAttribute('cy', y);
+    }
 }
 
 function setFuel(fuel) {
