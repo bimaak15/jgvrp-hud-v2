@@ -27,7 +27,7 @@ body {
 }
 
 /* ========================================
-   WELCOME SCREEN
+   WELCOME SCREEN — ENHANCED
    ======================================== */
 
 .welcome-screen {
@@ -36,12 +36,13 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), transparent);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    transition: opacity 0.6s ease;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
 }
 
 .welcome-screen.hidden {
@@ -49,12 +50,206 @@ body {
     pointer-events: none;
 }
 
+/* --- MAIN TITLE --- */
+.welcome-content {
+    position: relative;
+    text-align: center;
+    z-index: 10;
+}
+
 .welcome-title {
-    font-size: 64px;
+    font-size: 56px;
     color: var(--neon-cyan);
-    text-shadow: 0 0 20px var(--neon-cyan);
-    letter-spacing: 12px;
-    font-weight: 800;
+    text-shadow: 0 0 20px var(--neon-cyan), 0 0 60px rgba(0, 255, 255, 0.3);
+    letter-spacing: 10px;
+    font-weight: 900;
+    position: relative;
+    animation: textPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textPulse {
+    0% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px rgba(0, 255, 255, 0.2); }
+    100% { text-shadow: 0 0 30px var(--neon-cyan), 0 0 80px rgba(0, 255, 255, 0.5), 0 0 120px rgba(0, 255, 255, 0.2); }
+}
+
+/* --- SUBTITLE --- */
+.welcome-subtitle {
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+/* --- LOADING BAR --- */
+.welcome-bar {
+    width: 200px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    margin: 20px auto 0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.welcome-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    box-shadow: 0 0 15px var(--neon-cyan);
+    animation: barFill 2.5s ease-in-out forwards;
+}
+
+@keyframes barFill {
+    0% { width: 0%; }
+    70% { width: 85%; }
+    100% { width: 100%; }
+}
+
+/* --- GLITCH CLONES --- */
+.glitch-clone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.glitch-r { color: #ff0040; }
+.glitch-b { color: #00d4ff; }
+
+/* --- SCANLINE OVERLAY --- */
+.scanline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.015) 2px,
+        rgba(0, 255, 255, 0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 5;
+    animation: scanMove 4s linear infinite;
+}
+
+@keyframes scanMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(8px); }
+}
+
+/* --- LIGHTNING FLASH OVERLAY --- */
+.lightning-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    z-index: 50;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+.lightning-overlay.flash {
+    animation: lightningFlash 0.15s ease-out;
+}
+
+@keyframes lightningFlash {
+    0% { opacity: 0.9; }
+    20% { opacity: 0.1; }
+    40% { opacity: 0.7; }
+    60% { opacity: 0; }
+    80% { opacity: 0.4; }
+    100% { opacity: 0; }
+}
+
+/* --- ELECTRIC SPARKS --- */
+.sparks-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.spark {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--neon-cyan), 0 0 12px var(--neon-cyan);
+    animation: sparkFly 0.6s ease-out forwards;
+}
+
+@keyframes sparkFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+}
+
+/* --- GLITCH PHASE (applied via JS) --- */
+.glitch-active .welcome-title {
+    animation: glitchText 0.08s steps(2) infinite;
+}
+
+.glitch-active .glitch-clone {
+    opacity: 0.7;
+}
+
+.glitch-active .glitch-r {
+    animation: glitchR 0.1s steps(3) infinite;
+}
+
+.glitch-active .glitch-b {
+    animation: glitchB 0.12s steps(2) infinite;
+}
+
+@keyframes glitchText {
+    0% { transform: translate(0); }
+    25% { transform: translate(-3px, 2px) skewX(-2deg); }
+    50% { transform: translate(4px, -1px) skewX(3deg); }
+    75% { transform: translate(-2px, -3px) skewX(-1deg); }
+    100% { transform: translate(1px, 2px) skewX(1deg); }
+}
+
+@keyframes glitchR {
+    0% { transform: translate(0); clip-path: inset(20% 0 60% 0); }
+    33% { transform: translate(5px, -2px); clip-path: inset(40% 0 30% 0); }
+    66% { transform: translate(-4px, 3px); clip-path: inset(10% 0 70% 0); }
+    100% { transform: translate(3px, -1px); clip-path: inset(50% 0 20% 0); }
+}
+
+@keyframes glitchB {
+    0% { transform: translate(0); clip-path: inset(60% 0 10% 0); }
+    50% { transform: translate(-5px, 2px); clip-path: inset(30% 0 40% 0); }
+    100% { transform: translate(4px, -3px); clip-path: inset(70% 0 5% 0); }
+}
+
+/* --- SHAKE PHASE (applied via JS) --- */
+.shake-active {
+    animation: shakeHard 0.05s steps(1) infinite;
+}
+
+@keyframes shakeHard {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-8px, 5px); }
+    20% { transform: translate(6px, -7px); }
+    30% { transform: translate(-5px, -3px); }
+    40% { transform: translate(7px, 4px); }
+    50% { transform: translate(-4px, 6px); }
+    60% { transform: translate(5px, -5px); }
+    70% { transform: translate(-6px, 2px); }
+    80% { transform: translate(3px, -4px); }
+    90% { transform: translate(-2px, 7px); }
+    100% { transform: translate(4px, -2px); }
 }
 
 /* ========================================

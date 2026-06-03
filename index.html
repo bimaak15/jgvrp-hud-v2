@@ -11,10 +11,26 @@
 <body>
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
-        <div class="welcome-content">
-            <h1 class="welcome-title">SYSTEM INITIALIZED</h1>
-            <div class="welcome-lines"></div>
+        <!-- Lightning Flash Overlay -->
+        <div class="lightning-overlay" id="lightningOverlay"></div>
+
+        <!-- Scanline Effect -->
+        <div class="scanline-overlay"></div>
+
+        <!-- Main Content -->
+        <div class="welcome-content" id="welcomeContent">
+            <h1 class="welcome-title" id="welcomeTitle" data-text="SYSTEM INITIALIZED">SYSTEM INITIALIZED</h1>
+            <!-- Glitch clones -->
+            <h1 class="welcome-title glitch-clone glitch-r" aria-hidden="true">SYSTEM INITIALIZED</h1>
+            <h1 class="welcome-title glitch-clone glitch-b" aria-hidden="true">SYSTEM INITIALIZED</h1>
+            <div class="welcome-subtitle">VEHICLE HUD v2.0</div>
+            <div class="welcome-bar">
+                <div class="welcome-bar-fill" id="welcomeBarFill"></div>
+            </div>
         </div>
+
+        <!-- Electric Sparks Container -->
+        <div class="sparks-container" id="sparksContainer"></div>
     </div>
 
     <!-- Main HUD Display -->

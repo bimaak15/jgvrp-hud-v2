@@ -185,9 +185,87 @@ document.addEventListener('DOMContentLoaded', () => {
     setHealth(1.0);
     setGear('N');
 
-    // Welcome Screen auto-hide
+    // =============================================
+    // WELCOME SCREEN — DRAMATIC SEQUENCE
+    // =============================================
+    const ws = document.getElementById('welcomeScreen');
+    const lightningEl = document.getElementById('lightningOverlay');
+    const sparksEl = document.getElementById('sparksContainer');
+    const contentEl = document.getElementById('welcomeContent');
+
+    if (!ws) return;
+
+    // --- Helper: Lightning Flash ---
+    function triggerLightning() {
+        if (!lightningEl) return;
+        lightningEl.classList.remove('flash');
+        void lightningEl.offsetWidth; // force reflow
+        lightningEl.classList.add('flash');
+    }
+
+    // --- Helper: Spawn Sparks ---
+    function spawnSparks(count) {
+        if (!sparksEl) return;
+        for (let i = 0; i < count; i++) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = `${40 + Math.random() * 20}%`;
+            spark.style.top = `${35 + Math.random() * 30}%`;
+            spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 120}px`);
+            spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 120}px`);
+            sparksEl.appendChild(spark);
+            setTimeout(() => spark.remove(), 600);
+        }
+    }
+
+    // --- PHASE 1: Ambient Lightning (0s – 2s) ---
+    const ambientFlashes = [300, 800, 1200, 1700];
+    ambientFlashes.forEach(t => {
+        setTimeout(() => {
+            triggerLightning();
+            spawnSparks(3);
+        }, t);
+    });
+
+    // --- PHASE 2: Glitch Mode (2s – 2.6s) ---
     setTimeout(() => {
-        const ws = document.getElementById('welcomeScreen');
-        if (ws) ws.classList.add('hidden');
-    }, 3000);
+        if (contentEl) contentEl.classList.add('glitch-active');
+        triggerLightning();
+        spawnSparks(8);
+    }, 2000);
+
+    // Extra glitch + lightning
+    setTimeout(() => {
+        triggerLightning();
+        spawnSparks(6);
+    }, 2200);
+
+    setTimeout(() => {
+        triggerLightning();
+        spawnSparks(10);
+    }, 2400);
+
+    // --- PHASE 3: Shake + Final Burst (2.6s – 3.2s) ---
+    setTimeout(() => {
+        ws.classList.add('shake-active');
+        triggerLightning();
+        spawnSparks(15);
+    }, 2600);
+
+    setTimeout(() => {
+        triggerLightning();
+        spawnSparks(12);
+    }, 2800);
+
+    setTimeout(() => {
+        triggerLightning();
+        spawnSparks(20);
+    }, 2950);
+
+    // --- FINAL: Hide ---
+    setTimeout(() => {
+        ws.classList.remove('shake-active');
+        if (contentEl) contentEl.classList.remove('glitch-active');
+        ws.classList.add('hidden');
+    }, 3200);
 });
